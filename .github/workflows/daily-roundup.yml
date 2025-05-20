@@ -1,0 +1,35 @@
+name: Send email 
+
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'From email address'
+        required: true
+        default: 'onboarding@resend.dev'
+      to:
+        description: 'To email address'
+        required: true
+        default: 'test@example.com'
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+
+    env:
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      FROM: ${{ github.event.inputs.from }}
+      TO: ${{ github.event.inputs.to }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Send email
+        run: bun backend/index.ts
